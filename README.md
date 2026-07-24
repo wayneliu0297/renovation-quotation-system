@@ -23,6 +23,66 @@ proposal generation, a Streamlit web UI, and a PostgreSQL backend.
 
 ## Architecture
 
+A pure object-oriented core (`models` + `calculators`) wrapped by three
+interchangeable interfaces (CLI, web UI, database). The core has **zero**
+dependency on Streamlit, PostgreSQL or the document libraries, so it is fully
+unit-testable in isolation.
+
+![Architecture diagram](docs/architecture.svg)
+
+### Domain model
+
+```mermaid
+classDiagram
+    class CostModel {
+        <<abstract>>
+        +list~LineItem~ items
+        +base_subtotal() float
+        +subtotal(difficulty) float
+        +description()* str
+    }
+    class LineItem {
+        +str name
+        +float quantity
+        +float unit_price
+        +base_cost() float
+    }
+    class DifficultyMultiplier {
+        +int floor
+        +bool has_elevator
+        +int building_age
+        +Condition condition
+        +value() float
+    }
+    class Quotation {
+        +list~CostModel~ categories
+        +trade_subtotal() float
+        +supervision_fee() float
+        +grand_total() float
+    }
+    class RentalYieldCalculator {
+        +float monthly_rent
+        +float renovation_cost
+        +net_yield() float
+        +payback_months() float
+    }
+
+    CostModel "1" o-- "*" LineItem : contains
+    CostModel <|-- Demolition
+    CostModel <|-- Plumbing
+    CostModel <|-- Electrical
+    CostModel <|-- Carpentry
+    CostModel <|-- Flooring
+    CostModel <|-- Painting
+    CostModel <|-- Bathroom
+    CostModel <|-- Kitchen
+    Quotation "1" o-- "*" CostModel : aggregates
+    Quotation ..> DifficultyMultiplier : applies
+    RentalYieldCalculator ..> Quotation : reads grand_total
+```
+
+### Source layout
+
 ```
 src/renovation_quote/
 ├── models/            # OOP domain layer

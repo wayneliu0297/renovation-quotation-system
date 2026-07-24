@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 880" font-family="Inter, -apple-system, system-ui, 'Segoe UI', sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#6B7280"/>
+    </marker>
+    <marker id="tri" markerWidth="14" markerHeight="14" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#FFFFFF" stroke="#111827" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <!-- page background -->
+  <rect x="0" y="0" width="1000" height="880" fill="#F4F4F5"/>
+
+  <!-- title -->
+  <text x="40" y="50" font-size="26" font-weight="700" fill="#111827">Renovation Quotation System</text>
+  <text x="40" y="76" font-size="14" fill="#6B7280">Layered architecture &#183; a pure OOP core wrapped by three interchangeable interfaces</text>
+
+  <!-- dependency spine label -->
+  <text x="962" y="150" font-size="11" fill="#9CA3AF" transform="rotate(90 962 150)">depends on &#8595;</text>
+  <line x1="928" y1="110" x2="928" y2="770" stroke="#D1D5DB" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+
+  <!-- Layer 1: Presentation -->
+  <rect x="40" y="100" width="850" height="86" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5"/>
+  <text x="62" y="128" font-size="12" font-weight="700" fill="#9CA3AF" letter-spacing="1">PRESENTATION</text>
+  <rect x="62" y="138" width="380" height="36" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="80" y="161" font-size="13" fill="#111827">app/streamlit_app.py &#8212; web UI</text>
+  <rect x="458" y="138" width="410" height="36" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="476" y="161" font-size="13" fill="#111827">scripts/demo.py &#8212; CLI (no database)</text>
+
+  <line x1="465" y1="186" x2="465" y2="206" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Layer 2: Documents -->
+  <rect x="40" y="208" width="850" height="78" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5"/>
+  <text x="62" y="234" font-size="12" font-weight="700" fill="#9CA3AF" letter-spacing="1">DOCUMENTS</text>
+  <rect x="62" y="242" width="380" height="34" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="80" y="264" font-size="13" fill="#111827">word_generator.py &#8594; .docx (python-docx)</text>
+  <rect x="458" y="242" width="410" height="34" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="476" y="264" font-size="13" fill="#111827">pdf_generator.py &#8594; .pdf (reportlab)</text>
+
+  <line x1="465" y1="286" x2="465" y2="306" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Layer 3: Calculators -->
+  <rect x="40" y="308" width="850" height="78" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5"/>
+  <text x="62" y="334" font-size="12" font-weight="700" fill="#9CA3AF" letter-spacing="1">CALCULATORS &#183; business logic</text>
+  <rect x="62" y="342" width="380" height="34" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="80" y="364" font-size="13" fill="#111827">Quotation &#8212; totals, supervision fee</text>
+  <rect x="458" y="342" width="410" height="34" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="476" y="364" font-size="13" fill="#111827">RentalYieldCalculator &#8212; yield, payback</text>
+
+  <line x1="465" y1="386" x2="465" y2="406" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Layer 4: Models (core) -->
+  <rect x="40" y="408" width="850" height="252" rx="14" fill="#FFFFFF" stroke="#111827" stroke-width="2"/>
+  <text x="62" y="434" font-size="12" font-weight="700" fill="#111827" letter-spacing="1">MODELS &#9733; OOP domain core</text>
+
+  <!-- feeders -->
+  <rect x="62" y="450" width="180" height="42" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="72" y="468" font-size="12.5" font-weight="600" fill="#111827">LineItem</text>
+  <text x="72" y="485" font-size="10.5" fill="#6B7280">qty &#215; unit price</text>
+
+  <rect x="62" y="502" width="180" height="42" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="72" y="520" font-size="12.5" font-weight="600" fill="#111827">DifficultyMultiplier</text>
+  <text x="72" y="537" font-size="10.5" fill="#6B7280">survey &#8594; 1.0&#8211;1.5&#215;</text>
+
+  <!-- abstract base -->
+  <rect x="360" y="452" width="240" height="66" rx="10" fill="#111827"/>
+  <text x="480" y="478" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">CostModel</text>
+  <text x="480" y="500" font-size="11" fill="#D1D5DB" text-anchor="middle">abstract base &#183; subtotal(difficulty)</text>
+
+  <!-- feeders -> base -->
+  <line x1="242" y1="471" x2="356" y2="478" stroke="#6B7280" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="242" y1="523" x2="356" y2="500" stroke="#6B7280" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- inheritance line -->
+  <line x1="480" y1="518" x2="480" y2="574" stroke="#111827" stroke-width="1.5" marker-end="url(#tri)"/>
+  <text x="492" y="556" font-size="10.5" fill="#6B7280">8 subclasses inherit</text>
+
+  <!-- subclass chips -->
+  <g font-size="10.5" fill="#111827" text-anchor="middle">
+    <rect x="62"  y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="110" y="621">Demolition</text>
+    <rect x="164" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="212" y="621">Plumbing</text>
+    <rect x="266" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="314" y="621">Electrical</text>
+    <rect x="368" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="416" y="621">Carpentry</text>
+    <rect x="470" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="518" y="621">Flooring</text>
+    <rect x="572" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="620" y="621">Painting</text>
+    <rect x="674" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="722" y="621">Bathroom</text>
+    <rect x="776" y="600" width="96" height="34" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/><text x="824" y="621">Kitchen</text>
+  </g>
+
+  <line x1="465" y1="660" x2="465" y2="680" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Layer 5: Data -->
+  <rect x="40" y="682" width="850" height="86" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="62" y="708" font-size="12" font-weight="700" fill="#9CA3AF" letter-spacing="1">DATA &#183; optional persistence</text>
+  <rect x="62" y="716" width="380" height="36" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="80" y="739" font-size="13" fill="#111827">QuoteRepository &#8594; PostgreSQL (SQLAlchemy)</text>
+  <rect x="458" y="716" width="410" height="36" rx="9" fill="#F9FAFB" stroke="#E5E7EB"/>
+  <text x="476" y="739" font-size="13" fill="#111827">data/sample_data.py &#8212; fake seed data</text>
+
+  <!-- footer -->
+  <text x="40" y="812" font-size="11.5" fill="#6B7280">Core (Models + Calculators) has zero dependency on UI, database, or document libraries &#8212; fully unit-testable in isolation (18 pytest tests).</text>
+  <text x="40" y="834" font-size="11.5" fill="#9CA3AF">Portfolio demo &#183; sample data only.</text>
+</svg>
