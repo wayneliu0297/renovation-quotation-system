@@ -62,6 +62,17 @@ python -m scripts.generate_dataset        # -> data/quotes_sample.csv
 jupyter notebook notebooks/quotation_analysis.ipynb
 ```
 
+### Interactive app tabs
+
+The Streamlit app has three tabs — a live **Quote**, a **What-if** sensitivity
+view (how payback reacts to rent & occupancy), and an **Analytics** dashboard
+over the synthetic dataset (interactive Plotly charts with filters):
+
+<p align="center">
+  <img src="docs/screenshot_whatif.png" width="49%" alt="What-if sensitivity tab" />
+  <img src="docs/screenshot_analytics.png" width="49%" alt="Analytics dashboard tab" />
+</p>
+
 ## Architecture
 
 A pure object-oriented core (`models` + `calculators`) wrapped by three

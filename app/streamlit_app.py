@@ -1,6 +1,11 @@
 """Streamlit UI for the Renovation Quotation System (portfolio demo).
 
     streamlit run app/streamlit_app.py
+
+Three tabs:
+  * Quote     — survey -> live quote, rental yield, Word/PDF export
+  * What-if   — sensitivity of payback to rent & occupancy
+  * Analytics — explore the synthetic dataset (interactive charts)
 """
 
 from __future__ import annotations
@@ -8,19 +13,25 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+import plotly.express as px
 import streamlit as st
 
-# Make ``src`` importable when Streamlit runs this file directly.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
 
 from renovation_quote.calculators.quotation import Quotation
 from renovation_quote.calculators.rental_yield import RentalYieldCalculator
 from renovation_quote.data.sample_data import sample_categories
+from renovation_quote.data.synthetic import generate_dataset
 from renovation_quote.documents.pdf_generator import generate_pdf
 from renovation_quote.documents.word_generator import generate_word
 from renovation_quote.models.difficulty import Condition, DifficultyMultiplier
 
 st.set_page_config(page_title="Renovation Quotation System", page_icon="🏠", layout="wide")
+
+CONDITION_ORDER = ["normal", "aging", "poor", "severe"]
 
 
 def money(v: float) -> str:
@@ -30,6 +41,15 @@ def money(v: float) -> str:
 def md_money(v: float) -> str:
     """money() escaped for st.markdown, so the ``$`` is not parsed as LaTeX."""
     return money(v).replace("$", r"\$")
+
+
+@st.cache_data
+def load_dataset() -> pd.DataFrame:
+    """Load the synthetic dataset (or generate it on the fly if missing)."""
+    csv = ROOT / "data" / "quotes_sample.csv"
+    if csv.exists():
+        return pd.read_csv(csv)
+    return generate_dataset(n=800, seed=42)
 
 
 st.title("🏠 Renovation Quotation System")
@@ -76,91 +96,191 @@ rental = RentalYieldCalculator(
     property_value=property_value,
     occupancy_rate=occupancy_rate,
 )
-
-# -- headline metrics ------------------------------------------------------
-diff = difficulty.breakdown()
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Difficulty", f"{diff['multiplier']:.2f}x")
-c2.metric("Grand total", money(quote.grand_total))
-c3.metric("Net annual yield", f"{rental.net_yield:.2%}")
 payback = "n/a" if rental.payback_months == float("inf") else f"{rental.payback_months:.1f} mo"
-c4.metric("Payback", payback)
 
-st.divider()
+tab_quote, tab_whatif, tab_analytics = st.tabs(["📋 Quote", "🎚️ What-if", "📊 Analytics"])
 
-# -- category breakdown ----------------------------------------------------
-left, right = st.columns([3, 2])
+# =========================================================================
+# Tab 1 — Quote
+# =========================================================================
+with tab_quote:
+    diff = difficulty.breakdown()
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Difficulty", f"{diff['multiplier']:.2f}x")
+    c2.metric("Grand total", money(quote.grand_total))
+    c3.metric("Net annual yield", f"{rental.net_yield:.2%}")
+    c4.metric("Payback", payback)
 
-with left:
-    st.subheader("Cost breakdown")
-    for cat in quote.category_breakdown():
-        with st.expander(f"{cat['display_name']} — {money(cat['subtotal'])}", expanded=False):
-            st.caption(cat["description"])
-            st.table(
-                [
-                    {
-                        "Item": it["name"],
-                        "Qty": f"{it['quantity']:g} {it['unit']}",
-                        "Unit price": money(it["unit_price"]),
-                        "Amount": money(it["base_cost"]),
-                    }
-                    for it in cat["items"]
-                ]
-            )
+    st.divider()
+    left, right = st.columns([3, 2])
 
-    st.markdown(
-        f"**Trade subtotal:** {md_money(quote.trade_subtotal)}  \n"
-        f"**Supervision fee ({supervision_rate:.0%}):** {md_money(quote.supervision_fee)}  \n"
-        f"**Grand total:** {md_money(quote.grand_total)}"
+    with left:
+        st.subheader("Cost breakdown")
+        for cat in quote.category_breakdown():
+            with st.expander(f"{cat['display_name']} — {money(cat['subtotal'])}", expanded=False):
+                st.caption(cat["description"])
+                st.table(
+                    [
+                        {
+                            "Item": it["name"],
+                            "Qty": f"{it['quantity']:g} {it['unit']}",
+                            "Unit price": money(it["unit_price"]),
+                            "Amount": money(it["base_cost"]),
+                        }
+                        for it in cat["items"]
+                    ]
+                )
+        st.markdown(
+            f"**Trade subtotal:** {md_money(quote.trade_subtotal)}  \n"
+            f"**Supervision fee ({supervision_rate:.0%}):** {md_money(quote.supervision_fee)}  \n"
+            f"**Grand total:** {md_money(quote.grand_total)}"
+        )
+
+    with right:
+        st.subheader("Rental yield analysis")
+        ry = rental.as_dict()
+        st.table(
+            {
+                "Metric": [
+                    "Effective monthly rent",
+                    "Total investment",
+                    "Monthly net profit",
+                    "Net annual yield",
+                    "Payback period",
+                ],
+                "Value": [
+                    money(ry["effective_monthly_rent"]),
+                    money(ry["total_investment"]),
+                    money(ry["monthly_net_profit"]),
+                    f"{ry['net_yield']:.2%}",
+                    payback,
+                ],
+            }
+        )
+
+    st.divider()
+    st.subheader("Export proposal")
+    out = ROOT / "output"
+    col_docx, col_pdf = st.columns(2)
+    with col_docx:
+        if st.button("Generate Word (.docx)", use_container_width=True):
+            path = generate_word(quote, out / "proposal.docx", rental)
+            with open(path, "rb") as fh:
+                st.download_button(
+                    "Download .docx",
+                    fh,
+                    file_name="proposal.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True,
+                )
+    with col_pdf:
+        if st.button("Generate PDF (.pdf)", use_container_width=True):
+            path = generate_pdf(quote, out / "proposal.pdf", rental)
+            with open(path, "rb") as fh:
+                st.download_button(
+                    "Download .pdf",
+                    fh,
+                    file_name="proposal.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+
+# =========================================================================
+# Tab 2 — What-if / sensitivity analysis
+# =========================================================================
+with tab_whatif:
+    st.subheader("How sensitive is payback to rent & occupancy?")
+    reno_cost = quote.grand_total
+    st.caption(
+        f"Holding the current quote fixed (renovation cost **{md_money(reno_cost)}**), "
+        f"we sweep the rental assumptions around the base case "
+        f"(rent {md_money(monthly_rent)}, occupancy {occupancy_rate:.0%})."
     )
 
-with right:
-    st.subheader("Rental yield analysis")
-    ry = rental.as_dict()
-    st.table(
-        {
-            "Metric": [
-                "Effective monthly rent",
-                "Total investment",
-                "Monthly net profit",
-                "Net annual yield",
-                "Payback period",
-            ],
-            "Value": [
-                money(ry["effective_monthly_rent"]),
-                money(ry["total_investment"]),
-                money(ry["monthly_net_profit"]),
-                f"{ry['net_yield']:.2%}",
-                payback,
-            ],
-        }
+    occ_grid = np.round(np.arange(0.70, 1.001, 0.05), 2)
+    rent_grid = np.round(np.linspace(monthly_rent * 0.7, monthly_rent * 1.3, 13)).astype(int)
+
+    def payback_for(rent: float, occ: float) -> float:
+        calc = RentalYieldCalculator(
+            monthly_rent=float(rent), renovation_cost=reno_cost, occupancy_rate=float(occ)
+        )
+        return calc.payback_months
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        pay_occ = [payback_for(monthly_rent, o) for o in occ_grid]
+        fig_o = px.line(
+            x=occ_grid, y=pay_occ, markers=True,
+            labels={"x": "Occupancy rate", "y": "Payback (months)"},
+            title="Payback vs occupancy (at base rent)",
+        )
+        st.plotly_chart(fig_o, use_container_width=True)
+    with col_b:
+        pay_rent = [payback_for(r, occupancy_rate) for r in rent_grid]
+        fig_r = px.line(
+            x=rent_grid, y=pay_rent, markers=True,
+            labels={"x": "Monthly rent (TWD)", "y": "Payback (months)"},
+            title="Payback vs rent (at base occupancy)",
+        )
+        st.plotly_chart(fig_r, use_container_width=True)
+
+    z = [[payback_for(r, o) for r in rent_grid] for o in occ_grid]
+    fig_h = px.imshow(
+        z, x=rent_grid, y=occ_grid, origin="lower", aspect="auto",
+        color_continuous_scale="RdYlGn_r",
+        labels={"x": "Monthly rent (TWD)", "y": "Occupancy rate", "color": "Payback (mo)"},
+        title="Payback months across rent × occupancy",
+    )
+    st.plotly_chart(fig_h, use_container_width=True)
+    st.caption(
+        "Greener = faster payback. A steeper gradient along an axis means the "
+        "investment case is more sensitive to that variable."
     )
 
-# -- document export -------------------------------------------------------
-st.divider()
-st.subheader("Export proposal")
-out = Path(__file__).resolve().parent.parent / "output"
+# =========================================================================
+# Tab 3 — Analytics (dataset explorer)
+# =========================================================================
+with tab_analytics:
+    df = load_dataset()
+    st.subheader("Synthetic dataset explorer")
+    st.caption(f"{len(df):,} synthetic quotes generated by the same costing engine.")
 
-col_docx, col_pdf = st.columns(2)
-with col_docx:
-    if st.button("Generate Word (.docx)", use_container_width=True):
-        path = generate_word(quote, out / "proposal.docx", rental)
-        with open(path, "rb") as fh:
-            st.download_button(
-                "Download .docx",
-                fh,
-                file_name="proposal.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                use_container_width=True,
+    f1, f2 = st.columns([2, 3])
+    conds = f1.multiselect("Condition", CONDITION_ORDER, default=CONDITION_ORDER)
+    a_min, a_max = int(df["area_ping"].min()), int(df["area_ping"].max())
+    area_range = f2.slider("Floor area (ping)", a_min, a_max, (a_min, a_max))
+
+    d = df[df["condition"].isin(conds) & df["area_ping"].between(*area_range)]
+
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Quotes", f"{len(d):,}")
+    k2.metric("Avg total", money(d["grand_total"].mean()) if len(d) else "—")
+    k3.metric("Avg net yield", f"{d['net_yield'].mean():.1%}" if len(d) else "—")
+    k4.metric("Avg payback", f"{d['payback_months'].mean():.1f} mo" if len(d) else "—")
+
+    if len(d):
+        g1, g2 = st.columns(2)
+        with g1:
+            fig1 = px.histogram(d, x="grand_total", nbins=30, title="Total price distribution")
+            fig1.update_layout(showlegend=False)
+            st.plotly_chart(fig1, use_container_width=True)
+        with g2:
+            fig2 = px.scatter(
+                d, x="area_ping", y="grand_total", color="condition",
+                category_orders={"condition": CONDITION_ORDER}, opacity=0.7,
+                title="Floor area vs total price",
             )
-with col_pdf:
-    if st.button("Generate PDF (.pdf)", use_container_width=True):
-        path = generate_pdf(quote, out / "proposal.pdf", rental)
-        with open(path, "rb") as fh:
-            st.download_button(
-                "Download .pdf",
-                fh,
-                file_name="proposal.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-            )
+            st.plotly_chart(fig2, use_container_width=True)
+
+        cost_cols = [c for c in df.columns if c.startswith("cost_")]
+        means = d[cost_cols].mean().sort_values()
+        means.index = [c.replace("cost_", "").title() for c in means.index]
+        fig3 = px.bar(
+            means, orientation="h",
+            labels={"value": "Mean cost (TWD)", "index": "Category"},
+            title="Average cost by trade category",
+        )
+        fig3.update_layout(showlegend=False)
+        st.plotly_chart(fig3, use_container_width=True)
+    else:
+        st.info("No quotes match the current filters.")
