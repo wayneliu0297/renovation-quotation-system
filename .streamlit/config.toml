@@ -1,0 +1,6 @@
+# Streamlit configuration (applies locally and on Streamlit Community Cloud).
+
+[theme]
+# Pin a light theme so the deployed app matches the README screenshots
+# regardless of the viewer's browser dark-mode preference.
+base = "light"
