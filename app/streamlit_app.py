@@ -27,6 +27,11 @@ def money(v: float) -> str:
     return f"NT$ {v:,.0f}"
 
 
+def md_money(v: float) -> str:
+    """money() escaped for st.markdown, so the ``$`` is not parsed as LaTeX."""
+    return money(v).replace("$", r"\$")
+
+
 st.title("🏠 Renovation Quotation System")
 st.caption("Portfolio demo · sample data only, not tied to any real company.")
 
@@ -104,9 +109,9 @@ with left:
             )
 
     st.markdown(
-        f"**Trade subtotal:** {money(quote.trade_subtotal)}  \n"
-        f"**Supervision fee ({supervision_rate:.0%}):** {money(quote.supervision_fee)}  \n"
-        f"**Grand total:** {money(quote.grand_total)}"
+        f"**Trade subtotal:** {md_money(quote.trade_subtotal)}  \n"
+        f"**Supervision fee ({supervision_rate:.0%}):** {md_money(quote.supervision_fee)}  \n"
+        f"**Grand total:** {md_money(quote.grand_total)}"
     )
 
 with right:

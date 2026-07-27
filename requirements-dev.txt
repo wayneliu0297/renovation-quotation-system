@@ -1,0 +1,4 @@
+# Development / tooling dependencies (not required to run the app).
+-r requirements.txt
+pytest>=8.0
+playwright>=1.40   # used by scripts/screenshot.py to capture the README image

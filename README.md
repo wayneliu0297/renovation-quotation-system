@@ -1,10 +1,16 @@
 # Renovation Quotation System
 
+[![CI](https://github.com/wayneliu0297/renovation-quotation-system/actions/workflows/ci.yml/badge.svg)](https://github.com/wayneliu0297/renovation-quotation-system/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.12-blue.svg)
+![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+
 A portfolio project demonstrating an object-oriented cost-estimation engine for
 home-renovation projects, with a rental-yield calculator, automatic Word/PDF
 proposal generation, a Streamlit web UI, and a PostgreSQL backend.
 
 > **Demo / portfolio only.** All data is fake and not tied to any real company.
+
+![Streamlit UI](docs/screenshot.png)
 
 ## Features
 
