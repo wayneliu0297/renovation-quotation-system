@@ -1,0 +1,9 @@
+# Data-analysis / modeling / notebook dependencies.
+# Installs the app requirements too, then adds the ML + plotting stack.
+-r requirements.txt
+scikit-learn>=1.4
+matplotlib>=3.8
+seaborn>=0.13
+jupyter>=1.0
+nbconvert>=7.0
+ipykernel>=6.0
