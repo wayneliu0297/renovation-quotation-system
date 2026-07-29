@@ -31,6 +31,64 @@ from renovation_quote.models.difficulty import Condition, DifficultyMultiplier
 
 st.set_page_config(page_title="Renovation Quotation System", page_icon="🏠", layout="wide")
 
+
+def _inject_css() -> None:
+    """A polished, professional skin on top of Streamlit's defaults."""
+    st.markdown(
+        """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+        :root {
+          --accent:#2563eb; --grad:linear-gradient(135deg,#2563eb 0%,#4f46e5 55%,#0891b2 100%);
+          --ink:#0f1729; --muted:#566178; --border:#e6eaf2;
+        }
+        html, body, .stApp, [data-testid="stAppViewContainer"], [class*="css"] {
+          font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        }
+        /* cleaner chrome */
+        [data-testid="stToolbar"], [data-testid="stDecoration"] { display:none; }
+        #MainMenu, footer { visibility:hidden; }
+        [data-testid="stHeader"] { background:transparent; }
+        .block-container { padding-top:2.2rem; padding-bottom:3rem; max-width:1180px; }
+        h1,h2,h3 { letter-spacing:-.02em; }
+        /* hero */
+        .app-hero__title { font-weight:700; font-size:2.15rem; letter-spacing:-.03em; color:var(--ink); }
+        .app-hero__title .g { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .app-hero__rule { height:4px; width:64px; border-radius:3px; background:var(--grad); margin:.85rem 0 .35rem; }
+        .app-hero__sub { color:var(--muted); font-size:1rem; }
+        /* metric cards */
+        [data-testid="stMetric"] {
+          background:#fff; border:1px solid var(--border); border-radius:14px;
+          padding:.9rem 1.05rem; box-shadow:0 1px 2px rgba(16,24,40,.05);
+          position:relative; overflow:hidden;
+        }
+        [data-testid="stMetric"]::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad); }
+        [data-testid="stMetricValue"] { font-weight:700; font-size:1.8rem; letter-spacing:-.02em; }
+        [data-testid="stMetricValue"] > div { overflow:visible; }
+        [data-testid="stMetricLabel"] { color:var(--muted); }
+        /* tabs */
+        .stTabs [data-baseweb="tab-list"] { gap:6px; border-bottom:1px solid var(--border); }
+        .stTabs [data-baseweb="tab"] { font-weight:600; color:var(--muted); }
+        .stTabs [aria-selected="true"] { color:var(--accent); }
+        .stTabs [data-baseweb="tab-highlight"] { background:var(--accent); }
+        /* buttons */
+        .stButton>button, .stDownloadButton>button {
+          border-radius:10px; font-weight:600; border:1px solid var(--border); transition:all .15s ease;
+        }
+        .stButton>button:hover, .stDownloadButton>button:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+        /* sidebar */
+        [data-testid="stSidebar"] { background:#f7f9fd; border-right:1px solid #eef1f7; }
+        /* expanders */
+        [data-testid="stExpander"] { border:1px solid var(--border); border-radius:12px; box-shadow:0 1px 2px rgba(16,24,40,.04); }
+        [data-testid="stExpander"] summary:hover { color:var(--accent); }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+_inject_css()
+
 CONDITION_ORDER = ["normal", "aging", "poor", "severe"]
 
 
@@ -52,7 +110,16 @@ def load_dataset() -> pd.DataFrame:
     return generate_dataset(n=800, seed=42)
 
 
-st.title("🏠 Renovation Quotation System")
+st.markdown(
+    """
+    <div class="app-hero">
+      <div class="app-hero__title">🏠 Renovation <span class="g">Quotation System</span></div>
+      <div class="app-hero__rule"></div>
+      <div class="app-hero__sub">Instant renovation quotes · rental-yield analysis · one-click Word/PDF proposals</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 st.caption("Portfolio demo · sample data only, not tied to any real company.")
 
 # -- sidebar: survey inputs -----------------------------------------------

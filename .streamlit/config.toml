@@ -1,6 +1,9 @@
 # Streamlit configuration (applies locally and on Streamlit Community Cloud).
 
 [theme]
-# Pin a light theme so the deployed app matches the README screenshots
-# regardless of the viewer's browser dark-mode preference.
+# Pinned light theme + a professional blue palette (matches the portfolio site).
 base = "light"
+primaryColor = "#2563eb"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f5f7fb"
+textColor = "#0f1729"
