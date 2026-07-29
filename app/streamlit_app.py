@@ -33,54 +33,57 @@ st.set_page_config(page_title="Renovation Quotation System", page_icon="🏠", l
 
 
 def _inject_css() -> None:
-    """A polished, professional skin on top of Streamlit's defaults."""
+    """A warm, premium "renovation / interior" skin (muted-earth palette)."""
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
         :root {
-          --accent:#2563eb; --grad:linear-gradient(135deg,#2563eb 0%,#4f46e5 55%,#0891b2 100%);
-          --ink:#0f1729; --muted:#566178; --border:#e6eaf2;
+          --accent:#b0764f; --accent-strong:#96603d;
+          --grad:linear-gradient(135deg,#b0764f 0%,#c89b62 100%);
+          --ink:#34302a; --muted:#8a7d6c; --border:#e6dccb;
+          --surface:#fffdf8; --soft:#f1e7db;
+          --serif:'Fraunces',Georgia,'Times New Roman',serif;
+          --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
         }
-        html, body, .stApp, [data-testid="stAppViewContainer"], [class*="css"] {
-          font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-        }
+        html, body, .stApp, [data-testid="stAppViewContainer"], [class*="css"] { font-family:var(--sans); color:var(--ink); }
+        /* serif for headings -> premium interior/contract feel */
+        h1, h2, h3, [data-testid="stHeading"] { font-family:var(--serif); letter-spacing:-.01em; color:var(--ink); }
         /* cleaner chrome */
         [data-testid="stToolbar"], [data-testid="stDecoration"] { display:none; }
         #MainMenu, footer { visibility:hidden; }
         [data-testid="stHeader"] { background:transparent; }
         .block-container { padding-top:2.2rem; padding-bottom:3rem; max-width:1180px; }
-        h1,h2,h3 { letter-spacing:-.02em; }
         /* hero */
-        .app-hero__title { font-weight:700; font-size:2.15rem; letter-spacing:-.03em; color:var(--ink); }
-        .app-hero__title .g { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
-        .app-hero__rule { height:4px; width:64px; border-radius:3px; background:var(--grad); margin:.85rem 0 .35rem; }
+        .app-hero__title { font-family:var(--serif); font-weight:600; font-size:2.4rem; letter-spacing:-.01em; color:var(--ink); }
+        .app-hero__title .g { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; font-style:italic; }
+        .app-hero__rule { height:4px; width:66px; border-radius:3px; background:var(--grad); margin:.9rem 0 .4rem; }
         .app-hero__sub { color:var(--muted); font-size:1rem; }
         /* metric cards */
         [data-testid="stMetric"] {
-          background:#fff; border:1px solid var(--border); border-radius:14px;
-          padding:.9rem 1.05rem; box-shadow:0 1px 2px rgba(16,24,40,.05);
+          background:var(--surface); border:1px solid var(--border); border-radius:14px;
+          padding:.9rem 1.05rem; box-shadow:0 2px 10px -6px rgba(120,80,40,.20);
           position:relative; overflow:hidden;
         }
         [data-testid="stMetric"]::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad); }
-        [data-testid="stMetricValue"] { font-weight:700; font-size:1.8rem; letter-spacing:-.02em; }
+        [data-testid="stMetricValue"] { font-family:var(--serif); font-weight:600; font-size:1.85rem; letter-spacing:-.01em; color:var(--ink); }
         [data-testid="stMetricValue"] > div { overflow:visible; }
-        [data-testid="stMetricLabel"] { color:var(--muted); }
+        [data-testid="stMetricLabel"] { color:var(--muted); font-family:var(--sans); }
         /* tabs */
         .stTabs [data-baseweb="tab-list"] { gap:6px; border-bottom:1px solid var(--border); }
-        .stTabs [data-baseweb="tab"] { font-weight:600; color:var(--muted); }
-        .stTabs [aria-selected="true"] { color:var(--accent); }
+        .stTabs [data-baseweb="tab"] { font-family:var(--sans); font-weight:600; color:var(--muted); }
+        .stTabs [aria-selected="true"] { color:var(--accent-strong); }
         .stTabs [data-baseweb="tab-highlight"] { background:var(--accent); }
         /* buttons */
         .stButton>button, .stDownloadButton>button {
           border-radius:10px; font-weight:600; border:1px solid var(--border); transition:all .15s ease;
         }
-        .stButton>button:hover, .stDownloadButton>button:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+        .stButton>button:hover, .stDownloadButton>button:hover { border-color:var(--accent); color:var(--accent-strong); transform:translateY(-1px); }
         /* sidebar */
-        [data-testid="stSidebar"] { background:#f7f9fd; border-right:1px solid #eef1f7; }
+        [data-testid="stSidebar"] { background:#f3ece0; border-right:1px solid #e9e0d0; }
         /* expanders */
-        [data-testid="stExpander"] { border:1px solid var(--border); border-radius:12px; box-shadow:0 1px 2px rgba(16,24,40,.04); }
-        [data-testid="stExpander"] summary:hover { color:var(--accent); }
+        [data-testid="stExpander"] { border:1px solid var(--border); border-radius:12px; box-shadow:0 2px 8px -6px rgba(120,80,40,.16); }
+        [data-testid="stExpander"] summary:hover { color:var(--accent-strong); }
         </style>
         """,
         unsafe_allow_html=True,
@@ -90,6 +93,23 @@ def _inject_css() -> None:
 _inject_css()
 
 CONDITION_ORDER = ["normal", "aging", "poor", "severe"]
+
+# Warm "renovation" chart palette (matches the app skin).
+CLAY = "#b0764f"
+WARM_SEQ = ["#caa06e", "#c0804f", "#a85d3a", "#7a3f28"]  # normal -> severe (worse = deeper)
+
+
+def _style_fig(fig):
+    """Blend a Plotly figure into the warm cream theme."""
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#34302a", family="IBM Plex Sans, sans-serif"),
+        margin=dict(t=48, l=8, r=8, b=8),
+    )
+    fig.update_xaxes(gridcolor="rgba(120,90,50,.12)", zeroline=False)
+    fig.update_yaxes(gridcolor="rgba(120,90,50,.12)", zeroline=False)
+    return fig
 
 
 def money(v: float) -> str:
@@ -280,28 +300,30 @@ with tab_whatif:
             x=occ_grid, y=pay_occ, markers=True,
             labels={"x": "Occupancy rate", "y": "Payback (months)"},
             title="Payback vs occupancy (at base rent)",
+            color_discrete_sequence=[CLAY],
         )
-        st.plotly_chart(fig_o, use_container_width=True)
+        st.plotly_chart(_style_fig(fig_o), use_container_width=True)
     with col_b:
         pay_rent = [payback_for(r, occupancy_rate) for r in rent_grid]
         fig_r = px.line(
             x=rent_grid, y=pay_rent, markers=True,
             labels={"x": "Monthly rent (TWD)", "y": "Payback (months)"},
             title="Payback vs rent (at base occupancy)",
+            color_discrete_sequence=[CLAY],
         )
-        st.plotly_chart(fig_r, use_container_width=True)
+        st.plotly_chart(_style_fig(fig_r), use_container_width=True)
 
     z = [[payback_for(r, o) for r in rent_grid] for o in occ_grid]
     fig_h = px.imshow(
         z, x=rent_grid, y=occ_grid, origin="lower", aspect="auto",
-        color_continuous_scale="RdYlGn_r",
+        color_continuous_scale="YlOrBr",
         labels={"x": "Monthly rent (TWD)", "y": "Occupancy rate", "color": "Payback (mo)"},
         title="Payback months across rent × occupancy",
     )
-    st.plotly_chart(fig_h, use_container_width=True)
+    st.plotly_chart(_style_fig(fig_h), use_container_width=True)
     st.caption(
-        "Greener = faster payback. A steeper gradient along an axis means the "
-        "investment case is more sensitive to that variable."
+        "Lighter = faster payback (darker = longer). A steeper gradient along an "
+        "axis means the investment case is more sensitive to that variable."
     )
 
 # =========================================================================
@@ -328,16 +350,18 @@ with tab_analytics:
     if len(d):
         g1, g2 = st.columns(2)
         with g1:
-            fig1 = px.histogram(d, x="grand_total", nbins=30, title="Total price distribution")
+            fig1 = px.histogram(d, x="grand_total", nbins=30, title="Total price distribution",
+                                color_discrete_sequence=[CLAY])
             fig1.update_layout(showlegend=False)
-            st.plotly_chart(fig1, use_container_width=True)
+            st.plotly_chart(_style_fig(fig1), use_container_width=True)
         with g2:
             fig2 = px.scatter(
                 d, x="area_ping", y="grand_total", color="condition",
                 category_orders={"condition": CONDITION_ORDER}, opacity=0.7,
+                color_discrete_sequence=WARM_SEQ,
                 title="Floor area vs total price",
             )
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(_style_fig(fig2), use_container_width=True)
 
         cost_cols = [c for c in df.columns if c.startswith("cost_")]
         means = d[cost_cols].mean().sort_values()
@@ -346,8 +370,9 @@ with tab_analytics:
             means, orientation="h",
             labels={"value": "Mean cost (TWD)", "index": "Category"},
             title="Average cost by trade category",
+            color_discrete_sequence=[CLAY],
         )
         fig3.update_layout(showlegend=False)
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(_style_fig(fig3), use_container_width=True)
     else:
         st.info("No quotes match the current filters.")

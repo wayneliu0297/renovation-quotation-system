@@ -1,9 +1,9 @@
 # Streamlit configuration (applies locally and on Streamlit Community Cloud).
 
 [theme]
-# Pinned light theme + a professional blue palette (matches the portfolio site).
+# Warm "renovation / interior" palette — muted-earth (cream + clay).
 base = "light"
-primaryColor = "#2563eb"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f5f7fb"
-textColor = "#0f1729"
+primaryColor = "#b0764f"
+backgroundColor = "#f8f3ea"
+secondaryBackgroundColor = "#f0e8db"
+textColor = "#34302a"
