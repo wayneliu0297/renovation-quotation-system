@@ -94,18 +94,22 @@ _inject_css()
 
 CONDITION_ORDER = ["normal", "aging", "poor", "severe"]
 
-# Warm "renovation" chart palette (matches the app skin).
-CLAY = "#b0764f"
-WARM_SEQ = ["#caa06e", "#c0804f", "#a85d3a", "#7a3f28"]  # normal -> severe (worse = deeper)
+# Chart palette — warm base with a teal "pop" for a designed, professional look
+# (the classic terracotta + teal interior pairing), NOT everything one brown.
+POP = "#1f9e8a"   # teal — primary chart / pop colour
+WARM = "#c15f3c"  # terracotta — secondary series
+# Distinct, designed categorical palette (normal -> severe): teal, ochre, terracotta, rust
+CAT_SEQ = ["#1f9e8a", "#e0a03e", "#c15f3c", "#7a4a3a"]
 
 
 def _style_fig(fig):
-    """Blend a Plotly figure into the warm cream theme."""
+    """Blend a Plotly figure into the warm cream theme (transparent bg, serif titles)."""
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(color="#34302a", family="IBM Plex Sans, sans-serif"),
-        margin=dict(t=48, l=8, r=8, b=8),
+        title_font=dict(family="Fraunces, Georgia, serif", size=18, color="#34302a"),
+        margin=dict(t=52, l=8, r=8, b=8),
     )
     fig.update_xaxes(gridcolor="rgba(120,90,50,.12)", zeroline=False)
     fig.update_yaxes(gridcolor="rgba(120,90,50,.12)", zeroline=False)
@@ -300,7 +304,7 @@ with tab_whatif:
             x=occ_grid, y=pay_occ, markers=True,
             labels={"x": "Occupancy rate", "y": "Payback (months)"},
             title="Payback vs occupancy (at base rent)",
-            color_discrete_sequence=[CLAY],
+            color_discrete_sequence=[POP],
         )
         st.plotly_chart(_style_fig(fig_o), use_container_width=True)
     with col_b:
@@ -309,14 +313,14 @@ with tab_whatif:
             x=rent_grid, y=pay_rent, markers=True,
             labels={"x": "Monthly rent (TWD)", "y": "Payback (months)"},
             title="Payback vs rent (at base occupancy)",
-            color_discrete_sequence=[CLAY],
+            color_discrete_sequence=[POP],
         )
         st.plotly_chart(_style_fig(fig_r), use_container_width=True)
 
     z = [[payback_for(r, o) for r in rent_grid] for o in occ_grid]
     fig_h = px.imshow(
         z, x=rent_grid, y=occ_grid, origin="lower", aspect="auto",
-        color_continuous_scale="YlOrBr",
+        color_continuous_scale="Teal",
         labels={"x": "Monthly rent (TWD)", "y": "Occupancy rate", "color": "Payback (mo)"},
         title="Payback months across rent × occupancy",
     )
@@ -351,14 +355,14 @@ with tab_analytics:
         g1, g2 = st.columns(2)
         with g1:
             fig1 = px.histogram(d, x="grand_total", nbins=30, title="Total price distribution",
-                                color_discrete_sequence=[CLAY])
+                                color_discrete_sequence=[POP])
             fig1.update_layout(showlegend=False)
             st.plotly_chart(_style_fig(fig1), use_container_width=True)
         with g2:
             fig2 = px.scatter(
                 d, x="area_ping", y="grand_total", color="condition",
                 category_orders={"condition": CONDITION_ORDER}, opacity=0.7,
-                color_discrete_sequence=WARM_SEQ,
+                color_discrete_sequence=CAT_SEQ,
                 title="Floor area vs total price",
             )
             st.plotly_chart(_style_fig(fig2), use_container_width=True)
@@ -370,7 +374,7 @@ with tab_analytics:
             means, orientation="h",
             labels={"value": "Mean cost (TWD)", "index": "Category"},
             title="Average cost by trade category",
-            color_discrete_sequence=[CLAY],
+            color_discrete_sequence=[WARM],
         )
         fig3.update_layout(showlegend=False)
         st.plotly_chart(_style_fig(fig3), use_container_width=True)
